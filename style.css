@@ -5,7 +5,7 @@ body {
 }
 
 header {
-  background-color: #009688;
+  background: #009688;
   color: white;
   text-align: center;
   padding: 20px;
@@ -15,23 +15,43 @@ header h1 {
   margin: 0;
 }
 
+header p {
+  margin-top: 5px;
+}
+
 main {
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 20px;
+  gap: 10px;
 }
 
 button {
   border: none;
   border-radius: 12px;
-  padding: 16px;
-  font-size: 18px;
-  background-color: white;
+  padding: 15px;
+  font-size: 16px;
+  background: white;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 button:hover {
-  background-color: #e8f5e9;
+  background: #e8f5e9;
+}
+
+#edukia {
+  margin-top: 20px;
+}
+
+.txartela {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.txartela h3 {
+  margin-top: 0;
 }
