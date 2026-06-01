@@ -1,5 +1,5 @@
 const SHEET_ID = "14HT9OC7slKCsJrVNCLMcTaJPPYDfcgw3VKhLMO-6Xfo";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxV7UH3AuO8MUZnveUDKGD6zlz6xvaxdHINHfQfjFG4MG2NkUAyPd6jDq8DddSgFS_9og/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwV1hubdsBkgs4ZjLBqS6K8Ut-8_Dgw7CxO_kJkUAjEkBuQUwPIFOd6XaIxirVVDnd_qg/exec";
 
 function erakutsiAtala(atala) {
   const edukia = document.getElementById("edukia");
