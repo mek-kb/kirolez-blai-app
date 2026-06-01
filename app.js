@@ -101,23 +101,12 @@ async function ordutegiaIkusi(taldea) {
       }
     });
 
-    if (irudia) {
-      edukia.innerHTML = `
-        <h2>${taldea} - Ordutegia</h2>
-        <img src="${irudia}" class="irudiHandia">
-      `;
-    } else {
-      edukia.innerHTML = `
-        <h2>${taldea} - Ordutegia</h2>
-        <p>Ez da ordutegirik aurkitu.</p>
-      `;
-    }
+    edukia.innerHTML = irudia
+      ? `<h2>${taldea} - Ordutegia</h2><img src="${irudia}" class="irudiHandia">`
+      : `<h2>${taldea} - Ordutegia</h2><p>Ez da ordutegirik aurkitu.</p>`;
 
   } catch (error) {
-    edukia.innerHTML = `
-      <p>Ezin izan da ordutegia kargatu.</p>
-      <small>${error}</small>
-    `;
+    edukia.innerHTML = `<p>Ezin izan da ordutegia kargatu.</p><small>${error}</small>`;
   }
 }
 
@@ -144,23 +133,12 @@ async function kokalekuakIkusi(taldea) {
       }
     });
 
-    if (irudia) {
-      edukia.innerHTML = `
-        <h2>${taldea} - Kokalekuak</h2>
-        <img src="${irudia}" class="irudiHandia">
-      `;
-    } else {
-      edukia.innerHTML = `
-        <h2>${taldea} - Kokalekuak</h2>
-        <p>Ez da kokalekurik aurkitu.</p>
-      `;
-    }
+    edukia.innerHTML = irudia
+      ? `<h2>${taldea} - Kokalekuak</h2><img src="${irudia}" class="irudiHandia">`
+      : `<h2>${taldea} - Kokalekuak</h2><p>Ez da kokalekurik aurkitu.</p>`;
 
   } catch (error) {
-    edukia.innerHTML = `
-      <p>Ezin izan dira kokalekuak kargatu.</p>
-      <small>${error}</small>
-    `;
+    edukia.innerHTML = `<p>Ezin izan dira kokalekuak kargatu.</p><small>${error}</small>`;
   }
 }
 
@@ -188,8 +166,9 @@ async function partaideakIkusi(taldea) {
       const izena = row.c[2]?.v || "";
       const tutorea = row.c[3]?.v || "";
       const telefonoa = row.c[4]?.v || "";
-      const jakinBeharrekoa = row.c[5]?.v || "";
-      const baimenak = row.c[6]?.v || "";
+      const alergiak = row.c[5]?.v || "";
+      const beldurrak = row.c[6]?.v || "";
+      const baimenak = row.c[7]?.v || "";
 
       if (taldeaSheet === taldea) {
         html += `
@@ -197,7 +176,8 @@ async function partaideakIkusi(taldea) {
             <h3>${izena}</h3>
             <p><strong>Tutorea:</strong> ${tutorea}</p>
             <p><strong>Telefonoa:</strong> <a href="tel:${telefonoa}">${telefonoa}</a></p>
-            <p><strong>Jakin beharrekoa:</strong> ${jakinBeharrekoa}</p>
+            <p><strong>Alergiak:</strong> ${alergiak}</p>
+            <p><strong>Beldurrak:</strong> ${beldurrak}</p>
             <p><strong>Baimenak:</strong> ${baimenak}</p>
             <small>ID: ${id}</small>
           </div>
