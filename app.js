@@ -249,18 +249,27 @@ async function dokumentuakIkusi() {
       const izenburua = gelaxka(row, 0);
       const esteka = gelaxka(row, 1);
 
-      if (izenburua && esteka) {
+      if (
+        izenburua &&
+        esteka &&
+        izenburua.toLowerCase() !== "izenburua"
+      ) {
         html += `
           <div class="txartela">
-            <a href="${esteka}" target="_blank">📄 ${izenburua}</a>
+            <a href="${esteka}" target="_blank">
+              📄 ${izenburua}
+            </a>
           </div>
         `;
       }
     });
 
     edukia.innerHTML = html;
+
   } catch (error) {
-    edukia.innerHTML = `<p>Ezin izan dira dokumentuak kargatu.</p><small>${error}</small>`;
+    edukia.innerHTML = `
+      <p>Ezin izan dira dokumentuak kargatu.</p>
+    `;
   }
 }
 
@@ -276,13 +285,29 @@ async function protokoloakIkusi() {
       const izenburua = gelaxka(row, 0);
       const esteka = gelaxka(row, 1);
 
-      if (izenburua && esteka) {
+      if (
+        izenburua &&
+        esteka &&
+        izenburua.toLowerCase() !== "izenburua"
+      ) {
         html += `
           <div class="txartela">
-            <a href="${esteka}" target="_blank">📋 ${izenburua}</a>
+            <a href="${esteka}" target="_blank">
+              📋 ${izenburua}
+            </a>
           </div>
         `;
       }
+    });
+
+    edukia.innerHTML = html;
+
+  } catch (error) {
+    edukia.innerHTML = `
+      <p>Ezin izan dira protokoloak kargatu.</p>
+    `;
+  }
+}
     });
 
     edukia.innerHTML = html;
