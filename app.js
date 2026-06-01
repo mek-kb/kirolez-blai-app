@@ -186,7 +186,7 @@ async function asistentziaIkusi(taldea) {
 
       if (taldeaSheet === taldea && izena) {
         html += `
-          <div class="txartela">
+          <div class="txartela" id="asistentzia-${id}">
             <h3>${izena}</h3>
             <button onclick="gordeAsistentzia('${taldea}', '${id}', '${izena}', 'Bai')">✅ Bertan</button>
             <button onclick="gordeAsistentzia('${taldea}', '${id}', '${izena}', 'Ez')">❌ Ez dago</button>
@@ -203,6 +203,12 @@ async function asistentziaIkusi(taldea) {
 
 async function gordeAsistentzia(taldea, id, izena, asistentzia) {
   const gaur = new Date().toISOString().split("T")[0];
+
+  const txartela = document.getElementById(`asistentzia-${id}`);
+  txartela.innerHTML = `
+    <h3>${izena}</h3>
+    <p><strong>Gordetzen...</strong></p>
+  `;
 
   const datuak = {
     data: gaur,
@@ -222,8 +228,15 @@ async function gordeAsistentzia(taldea, id, izena, asistentzia) {
       body: JSON.stringify(datuak)
     });
 
-    alert(`${izena}: ${asistentzia} gordeta`);
+    txartela.innerHTML = `
+      <h3>${izena}</h3>
+      <p><strong>✔ ${asistentzia}</strong></p>
+    `;
   } catch (error) {
-    alert("Errorea asistentzia gordetzean");
+    txartela.innerHTML = `
+      <h3>${izena}</h3>
+      <p><strong>Errorea gordetzean</strong></p>
+      <button onclick="gordeAsistentzia('${taldea}', '${id}', '${izena}', '${asistentzia}')">Saiatu berriro</button>
+    `;
   }
 }
