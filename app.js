@@ -2,13 +2,10 @@ const SHEET_ID = "14HT9OC7slKCsJrVNCLMcTaJPPYDfcgw3VKhLMO-6Xfo";
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwV1hubdsBkgs4ZjLBqS6K8Ut-8_Dgw7CxO_kJkUAjEkBuQUwPIFOd6XaIxirVVDnd_qg/exec";
 
 function erakutsiAtala(atala) {
-  const edukia = document.getElementById("edukia");
-
-  if (atala === "hasiera") {
-    edukia.innerHTML = `<h2>Ongi etorri!</h2><p>Kirolez Blai 2026 langileentzako aplikazioa.</p>`;
-  }
-
+  if (atala === "hasiera") hasieraIkusi();
   if (atala === "abisuak") kargatuAbisuak();
+
+  const edukia = document.getElementById("edukia");
 
   if (["LH3", "LH4", "LH5", "DBH"].includes(atala)) {
     edukia.innerHTML = `
@@ -36,6 +33,65 @@ function gelaxka(row, index) {
   return row.c[index]?.v || "";
 }
 
+async function hasieraIkusi() {
+  const edukia = document.getElementById("edukia");
+  edukia.innerHTML = "<p>Hasiera kargatzen...</p>";
+
+  try {
+    const abisuak = await sheetKargatu("Abisuak");
+    const partaideak = await sheetKargatu("Partaideak");
+    const gaur = new Date().toLocaleDateString("eu-ES");
+
+    let html = `
+      <h2>🏠 Hasiera</h2>
+
+      <div class="txartela">
+        <h3>📅 Gaur</h3>
+        <p>${gaur}</p>
+      </div>
+
+      <h3>📢 Azken abisuak</h3>
+    `;
+
+    abisuak.table.rows.slice(-3).reverse().forEach(row => {
+      const izenburua = gelaxka(row, 1);
+      const mezua = gelaxka(row, 2);
+
+      if (izenburua && izenburua.toLowerCase() !== "izenburua") {
+        html += `
+          <div class="txartela">
+            <h3>${izenburua}</h3>
+            <p>${mezua}</p>
+          </div>
+        `;
+      }
+    });
+
+    html += `<h3>⚠️ Alergiak dituzten partaideak</h3>`;
+
+    partaideak.table.rows.forEach(row => {
+      const taldea = gelaxka(row, 1);
+      const izena = gelaxka(row, 2);
+      const alergiak = gelaxka(row, 5);
+
+      if (izena && alergiak && alergiak.toLowerCase() !== "alergiak") {
+        html += `
+          <div class="txartela">
+            <h3>${izena}</h3>
+            <p><strong>Taldea:</strong> ${taldea}</p>
+            <p><strong>Alergiak:</strong> ${alergiak}</p>
+          </div>
+        `;
+      }
+    });
+
+    edukia.innerHTML = html;
+
+  } catch (error) {
+    edukia.innerHTML = `<p>Ezin izan da hasiera kargatu.</p><small>${error}</small>`;
+  }
+}
+
 async function kargatuAbisuak() {
   const edukia = document.getElementById("edukia");
   edukia.innerHTML = "<p>Abisuak kargatzen...</p>";
@@ -50,7 +106,7 @@ async function kargatuAbisuak() {
       const mezua = gelaxka(row, 2);
       const taldea = gelaxka(row, 3);
 
-      if (izenburua || mezua) {
+      if (izenburua && izenburua.toLowerCase() !== "izenburua") {
         html += `
           <div class="txartela">
             <h3>${izenburua}</h3>
@@ -200,10 +256,7 @@ async function gordeAsistentzia(taldea, id, izena, asistentzia) {
   const gaur = new Date().toISOString().split("T")[0];
   const txartela = document.getElementById(`asistentzia-${id}`);
 
-  txartela.innerHTML = `
-    <h3>${izena}</h3>
-    <p><strong>Gordetzen...</strong></p>
-  `;
+  txartela.innerHTML = `<h3>${izena}</h3><p><strong>Gordetzen...</strong></p>`;
 
   const datuak = {
     data: gaur,
@@ -221,10 +274,7 @@ async function gordeAsistentzia(taldea, id, izena, asistentzia) {
       body: JSON.stringify(datuak)
     });
 
-    txartela.innerHTML = `
-      <h3>${izena}</h3>
-      <p><strong>✔ ${asistentzia}</strong></p>
-    `;
+    txartela.innerHTML = `<h3>${izena}</h3><p><strong>✔ ${asistentzia}</strong></p>`;
   } catch (error) {
     txartela.innerHTML = `
       <h3>${izena}</h3>
@@ -246,11 +296,7 @@ async function dokumentuakIkusi() {
       const izenburua = gelaxka(row, 0);
       const esteka = gelaxka(row, 1);
 
-      if (
-        izenburua &&
-        esteka &&
-        izenburua.toLowerCase() !== "izenburua"
-      ) {
+      if (izenburua && esteka && izenburua.toLowerCase() !== "izenburua") {
         html += `
           <div class="txartela">
             <a href="${esteka}" target="_blank">📄 ${izenburua}</a>
@@ -277,11 +323,7 @@ async function protokoloakIkusi() {
       const izenburua = gelaxka(row, 0);
       const esteka = gelaxka(row, 1);
 
-      if (
-        izenburua &&
-        esteka &&
-        izenburua.toLowerCase() !== "izenburua"
-      ) {
+      if (izenburua && esteka && izenburua.toLowerCase() !== "izenburua") {
         html += `
           <div class="txartela">
             <a href="${esteka}" target="_blank">📋 ${izenburua}</a>
