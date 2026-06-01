@@ -48,12 +48,7 @@ async function kargatuAbisuak() {
   try {
     const erantzuna = await fetch(url);
     const testua = await erantzuna.text();
-
-    const jsonText = testua.substring(
-      testua.indexOf("{"),
-      testua.lastIndexOf("}") + 1
-    );
-
+    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
     const json = JSON.parse(jsonText);
 
     let html = "<h2>📢 Abisuak</h2>";
@@ -83,11 +78,47 @@ async function kargatuAbisuak() {
   }
 }
 
-function ordutegiaIkusi(taldea) {
-  document.getElementById("edukia").innerHTML = `
-    <h2>${taldea} - Ordutegia</h2>
-    <p>Hemen talde honen ordutegia agertuko da.</p>
-  `;
+async function ordutegiaIkusi(taldea) {
+  const edukia = document.getElementById("edukia");
+  edukia.innerHTML = `<p>${taldea} taldeko ordutegia kargatzen...</p>`;
+
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Ordutegiak`;
+
+  try {
+    const erantzuna = await fetch(url);
+    const testua = await erantzuna.text();
+    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
+    const json = JSON.parse(jsonText);
+
+    let irudia = "";
+
+    json.table.rows.forEach(row => {
+      const taldeaSheet = row.c[0]?.v || "";
+      const irudiaUrl = row.c[1]?.v || "";
+
+      if (taldeaSheet === taldea) {
+        irudia = irudiaUrl;
+      }
+    });
+
+    if (irudia) {
+      edukia.innerHTML = `
+        <h2>${taldea} - Ordutegia</h2>
+        <img src="${irudia}" class="irudiHandia">
+      `;
+    } else {
+      edukia.innerHTML = `
+        <h2>${taldea} - Ordutegia</h2>
+        <p>Ez da ordutegirik aurkitu.</p>
+      `;
+    }
+
+  } catch (error) {
+    edukia.innerHTML = `
+      <p>Ezin izan da ordutegia kargatu.</p>
+      <small>${error}</small>
+    `;
+  }
 }
 
 function kokalekuakIkusi(taldea) {
@@ -106,22 +137,12 @@ async function partaideakIkusi(taldea) {
   try {
     const erantzuna = await fetch(url);
     const testua = await erantzuna.text();
-
-    const jsonText = testua.substring(
-      testua.indexOf("{"),
-      testua.lastIndexOf("}") + 1
-    );
-
+    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
     const json = JSON.parse(jsonText);
 
     let html = `
       <h2>${taldea} - Partaideak</h2>
-      <input 
-        type="text" 
-        id="bilatzailea" 
-        placeholder="Bilatu izena edo abizena..." 
-        onkeyup="bilatuPartaideak()"
-      >
+      <input type="text" id="bilatzailea" placeholder="Bilatu izena edo abizena..." onkeyup="bilatuPartaideak()">
       <div id="partaideZerrenda">
     `;
 
