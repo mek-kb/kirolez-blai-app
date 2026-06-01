@@ -17,11 +17,25 @@ function erakutsiAtala(atala) {
   if (["LH3", "LH4", "LH5", "DBH"].includes(atala)) {
     edukia.innerHTML = `
       <h2>${atala}</h2>
-      <button>📅 Ordutegia</button>
-      <button>📍 Kokalekuak</button>
-      <button>👥 Partaideak</button>
-      <button>✅ Asistentzia</button>
-      <button>ℹ️ Informazioa</button>
+
+      <button onclick="ordutegiaIkusi('${atala}')">📅 Ordutegia</button>
+      <button onclick="kokalekuakIkusi('${atala}')">📍 Kokalekuak</button>
+      <button onclick="partaideakIkusi('${atala}')">👥 Partaideak</button>
+      <button onclick="asistentziaIkusi('${atala}')">✅ Asistentzia</button>
+    `;
+  }
+
+  if (atala === "dokumentuak") {
+    edukia.innerHTML = `
+      <h2>Dokumentuak</h2>
+      <p>Laster dokumentuak hemen agertuko dira.</p>
+    `;
+  }
+
+  if (atala === "protokoloak") {
+    edukia.innerHTML = `
+      <h2>Protokoloak</h2>
+      <p>Laster protokoloak hemen agertuko dira.</p>
     `;
   }
 }
@@ -68,4 +82,32 @@ async function kargatuAbisuak() {
       <small>${error}</small>
     `;
   }
+}
+
+function ordutegiaIkusi(taldea) {
+  document.getElementById("edukia").innerHTML = `
+    <h2>${taldea} - Ordutegia</h2>
+    <p>Hemen talde honen ordutegia agertuko da.</p>
+  `;
+}
+
+function kokalekuakIkusi(taldea) {
+  document.getElementById("edukia").innerHTML = `
+    <h2>${taldea} - Kokalekuak</h2>
+    <p>Hemen talde honen kokalekuak agertuko dira.</p>
+  `;
+}
+
+function partaideakIkusi(taldea) {
+  document.getElementById("edukia").innerHTML = `
+    <h2>${taldea} - Partaideak</h2>
+    <p>Hemen talde honetako partaideak agertuko dira.</p>
+  `;
+}
+
+function asistentziaIkusi(taldea) {
+  document.getElementById("edukia").innerHTML = `
+    <h2>${taldea} - Asistentzia</h2>
+    <p>Hemen asistentzia markatzeko aukera egongo da.</p>
+  `;
 }
