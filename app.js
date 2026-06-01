@@ -17,7 +17,6 @@ function erakutsiAtala(atala) {
   if (["LH3", "LH4", "LH5", "DBH"].includes(atala)) {
     edukia.innerHTML = `
       <h2>${atala}</h2>
-
       <button onclick="ordutegiaIkusi('${atala}')">📅 Ordutegia</button>
       <button onclick="kokalekuakIkusi('${atala}')">📍 Kokalekuak</button>
       <button onclick="partaideakIkusi('${atala}')">👥 Partaideak</button>
@@ -98,11 +97,77 @@ function kokalekuakIkusi(taldea) {
   `;
 }
 
-function partaideakIkusi(taldea) {
-  document.getElementById("edukia").innerHTML = `
-    <h2>${taldea} - Partaideak</h2>
-    <p>Hemen talde honetako partaideak agertuko dira.</p>
-  `;
+async function partaideakIkusi(taldea) {
+  const edukia = document.getElementById("edukia");
+  edukia.innerHTML = `<p>${taldea} taldeko partaideak kargatzen...</p>`;
+
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Partaideak`;
+
+  try {
+    const erantzuna = await fetch(url);
+    const testua = await erantzuna.text();
+
+    const jsonText = testua.substring(
+      testua.indexOf("{"),
+      testua.lastIndexOf("}") + 1
+    );
+
+    const json = JSON.parse(jsonText);
+
+    let html = `
+      <h2>${taldea} - Partaideak</h2>
+      <input 
+        type="text" 
+        id="bilatzailea" 
+        placeholder="Bilatu izena edo abizena..." 
+        onkeyup="bilatuPartaideak()"
+      >
+      <div id="partaideZerrenda">
+    `;
+
+    json.table.rows.forEach(row => {
+      const id = row.c[0]?.v || "";
+      const taldeaSheet = row.c[1]?.v || "";
+      const izena = row.c[2]?.v || "";
+      const abizenak = row.c[3]?.v || "";
+      const tutorea = row.c[4]?.v || "";
+      const telefonoa = row.c[5]?.v || "";
+      const jakinBeharrekoa = row.c[6]?.v || "";
+      const baimenak = row.c[7]?.v || "";
+
+      if (taldeaSheet === taldea) {
+        html += `
+          <div class="txartela partaide-txartela">
+            <h3>${izena} ${abizenak}</h3>
+            <p><strong>Tutorea:</strong> ${tutorea}</p>
+            <p><strong>Telefonoa:</strong> <a href="tel:${telefonoa}">${telefonoa}</a></p>
+            <p><strong>Jakin beharrekoa:</strong> ${jakinBeharrekoa}</p>
+            <p><strong>Baimenak:</strong> ${baimenak}</p>
+            <small>ID: ${id}</small>
+          </div>
+        `;
+      }
+    });
+
+    html += `</div>`;
+    edukia.innerHTML = html;
+
+  } catch (error) {
+    edukia.innerHTML = `
+      <p>Ezin izan dira partaideak kargatu.</p>
+      <small>${error}</small>
+    `;
+  }
+}
+
+function bilatuPartaideak() {
+  const input = document.getElementById("bilatzailea").value.toLowerCase();
+  const txartelak = document.querySelectorAll(".partaide-txartela");
+
+  txartelak.forEach(txartela => {
+    const testua = txartela.innerText.toLowerCase();
+    txartela.style.display = testua.includes(input) ? "block" : "none";
+  });
 }
 
 function asistentziaIkusi(taldea) {
