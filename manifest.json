@@ -3,7 +3,7 @@
   "short_name": "Kirolez Blai",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f5f7fa",
+  "background_color": "#fbf7ee",
   "theme_color": "#009688",
   "orientation": "portrait",
   "icons": [
