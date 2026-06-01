@@ -121,11 +121,47 @@ async function ordutegiaIkusi(taldea) {
   }
 }
 
-function kokalekuakIkusi(taldea) {
-  document.getElementById("edukia").innerHTML = `
-    <h2>${taldea} - Kokalekuak</h2>
-    <p>Hemen talde honen kokalekuak agertuko dira.</p>
-  `;
+async function kokalekuakIkusi(taldea) {
+  const edukia = document.getElementById("edukia");
+  edukia.innerHTML = `<p>${taldea} taldeko kokalekuak kargatzen...</p>`;
+
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Kokalekuak`;
+
+  try {
+    const erantzuna = await fetch(url);
+    const testua = await erantzuna.text();
+    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
+    const json = JSON.parse(jsonText);
+
+    let irudia = "";
+
+    json.table.rows.forEach(row => {
+      const taldeaSheet = row.c[0]?.v || "";
+      const irudiaUrl = row.c[1]?.v || "";
+
+      if (taldeaSheet === taldea) {
+        irudia = irudiaUrl;
+      }
+    });
+
+    if (irudia) {
+      edukia.innerHTML = `
+        <h2>${taldea} - Kokalekuak</h2>
+        <img src="${irudia}" class="irudiHandia">
+      `;
+    } else {
+      edukia.innerHTML = `
+        <h2>${taldea} - Kokalekuak</h2>
+        <p>Ez da kokalekurik aurkitu.</p>
+      `;
+    }
+
+  } catch (error) {
+    edukia.innerHTML = `
+      <p>Ezin izan dira kokalekuak kargatu.</p>
+      <small>${error}</small>
+    `;
+  }
 }
 
 async function partaideakIkusi(taldea) {
