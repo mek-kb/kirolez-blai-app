@@ -178,7 +178,7 @@ async function partaideakIkusi(taldea) {
 
     let html = `
       <h2>${taldea} - Partaideak</h2>
-      <input type="text" id="bilatzailea" placeholder="Bilatu izena edo abizena..." onkeyup="bilatuPartaideak()">
+      <input type="text" id="bilatzailea" placeholder="Bilatu izena..." onkeyup="bilatuPartaideak()">
       <div id="partaideZerrenda">
     `;
 
@@ -186,16 +186,15 @@ async function partaideakIkusi(taldea) {
       const id = row.c[0]?.v || "";
       const taldeaSheet = row.c[1]?.v || "";
       const izena = row.c[2]?.v || "";
-      const abizenak = row.c[3]?.v || "";
-      const tutorea = row.c[4]?.v || "";
-      const telefonoa = row.c[5]?.v || "";
-      const jakinBeharrekoa = row.c[6]?.v || "";
-      const baimenak = row.c[7]?.v || "";
+      const tutorea = row.c[3]?.v || "";
+      const telefonoa = row.c[4]?.v || "";
+      const jakinBeharrekoa = row.c[5]?.v || "";
+      const baimenak = row.c[6]?.v || "";
 
       if (taldeaSheet === taldea) {
         html += `
           <div class="txartela partaide-txartela">
-            <h3>${izena} ${abizenak}</h3>
+            <h3>${izena}</h3>
             <p><strong>Tutorea:</strong> ${tutorea}</p>
             <p><strong>Telefonoa:</strong> <a href="tel:${telefonoa}">${telefonoa}</a></p>
             <p><strong>Jakin beharrekoa:</strong> ${jakinBeharrekoa}</p>
