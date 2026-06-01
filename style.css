@@ -13,6 +13,7 @@ header {
 
 header h1 {
   margin: 0;
+  font-size: 28px;
 }
 
 header p {
@@ -34,10 +35,12 @@ button {
   background: white;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: 0.2s;
 }
 
 button:hover {
   background: #e8f5e9;
+  transform: translateY(-2px);
 }
 
 #edukia {
@@ -48,10 +51,59 @@ button:hover {
   background: white;
   border-radius: 12px;
   padding: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .txartela h3 {
   margin-top: 0;
+  color: #009688;
+}
+
+.txartela p {
+  margin: 5px 0;
+}
+
+.txartela small {
+  color: #666;
+}
+
+#bilatzailea {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.partaide-txartela {
+  border-left: 5px solid #009688;
+}
+
+a {
+  color: #009688;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Mugikorretarako */
+
+@media (max-width: 768px) {
+  main {
+    padding: 15px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  header h1 {
+    font-size: 24px;
+  }
 }
