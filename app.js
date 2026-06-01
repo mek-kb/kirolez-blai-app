@@ -1,4 +1,5 @@
 const SHEET_ID = "14HT9OC7slKCsJrVNCLMcTaJPPYDfcgw3VKhLMO-6Xfo";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxV7UH3AuO8MUZnveUDKGD6zlz6xvaxdHINHfQfjFG4MG2NkUAyPd6jDq8DddSgFS_9og/exec";
 
 function erakutsiAtala(atala) {
   const edukia = document.getElementById("edukia");
@@ -166,9 +167,63 @@ function bilatuPartaideak() {
   });
 }
 
-function asistentziaIkusi(taldea) {
-  document.getElementById("edukia").innerHTML = `
-    <h2>${taldea} - Asistentzia</h2>
-    <p>Hemen asistentzia markatzeko aukera egongo da.</p>
-  `;
+async function asistentziaIkusi(taldea) {
+  const edukia = document.getElementById("edukia");
+  edukia.innerHTML = `<p>${taldea} taldeko asistentzia kargatzen...</p>`;
+
+  try {
+    const json = await sheetKargatu("Partaideak");
+
+    let html = `
+      <h2>${taldea} - Asistentzia</h2>
+      <p>Markatu haur bakoitzaren asistentzia:</p>
+    `;
+
+    json.table.rows.forEach(row => {
+      const id = gelaxka(row, 0);
+      const taldeaSheet = gelaxka(row, 1);
+      const izena = gelaxka(row, 2);
+
+      if (taldeaSheet === taldea && izena) {
+        html += `
+          <div class="txartela">
+            <h3>${izena}</h3>
+            <button onclick="gordeAsistentzia('${taldea}', '${id}', '${izena}', 'Bai')">✅ Bertan</button>
+            <button onclick="gordeAsistentzia('${taldea}', '${id}', '${izena}', 'Ez')">❌ Ez dago</button>
+          </div>
+        `;
+      }
+    });
+
+    edukia.innerHTML = html;
+  } catch (error) {
+    edukia.innerHTML = `<p>Ezin izan da asistentzia kargatu.</p><small>${error}</small>`;
+  }
+}
+
+async function gordeAsistentzia(taldea, id, izena, asistentzia) {
+  const gaur = new Date().toISOString().split("T")[0];
+
+  const datuak = {
+    data: gaur,
+    taldea: taldea,
+    id: id,
+    izena: izena,
+    asistentzia: asistentzia
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(datuak)
+    });
+
+    alert(`${izena}: ${asistentzia} gordeta`);
+  } catch (error) {
+    alert("Errorea asistentzia gordetzean");
+  }
 }
