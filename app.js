@@ -21,7 +21,6 @@ function erakutsiAtala(atala) {
   }
 
   if (atala === "dokumentuak") dokumentuakIkusi();
-
   if (atala === "protokoloak") protokoloakIkusi();
 }
 
@@ -199,8 +198,8 @@ async function asistentziaIkusi(taldea) {
 
 async function gordeAsistentzia(taldea, id, izena, asistentzia) {
   const gaur = new Date().toISOString().split("T")[0];
-
   const txartela = document.getElementById(`asistentzia-${id}`);
+
   txartela.innerHTML = `
     <h3>${izena}</h3>
     <p><strong>Gordetzen...</strong></p>
@@ -218,9 +217,7 @@ async function gordeAsistentzia(taldea, id, izena, asistentzia) {
     await fetch(SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datuak)
     });
 
@@ -256,20 +253,15 @@ async function dokumentuakIkusi() {
       ) {
         html += `
           <div class="txartela">
-            <a href="${esteka}" target="_blank">
-              📄 ${izenburua}
-            </a>
+            <a href="${esteka}" target="_blank">📄 ${izenburua}</a>
           </div>
         `;
       }
     });
 
     edukia.innerHTML = html;
-
   } catch (error) {
-    edukia.innerHTML = `
-      <p>Ezin izan dira dokumentuak kargatu.</p>
-    `;
+    edukia.innerHTML = `<p>Ezin izan dira dokumentuak kargatu.</p><small>${error}</small>`;
   }
 }
 
@@ -292,22 +284,10 @@ async function protokoloakIkusi() {
       ) {
         html += `
           <div class="txartela">
-            <a href="${esteka}" target="_blank">
-              📋 ${izenburua}
-            </a>
+            <a href="${esteka}" target="_blank">📋 ${izenburua}</a>
           </div>
         `;
       }
-    });
-
-    edukia.innerHTML = html;
-
-  } catch (error) {
-    edukia.innerHTML = `
-      <p>Ezin izan dira protokoloak kargatu.</p>
-    `;
-  }
-}
     });
 
     edukia.innerHTML = html;
