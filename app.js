@@ -40,18 +40,60 @@ async function hasieraIkusi() {
   try {
     const abisuak = await sheetKargatu("Abisuak");
     const partaideak = await sheetKargatu("Partaideak");
-    const gaur = new Date().toLocaleDateString("eu-ES");
+    const asistentzia = await sheetKargatu("Asistentzia");
+
+    const gaurISO = new Date().toISOString().split("T")[0];
+    const gaurIkusgai = new Date().toLocaleDateString("eu-ES");
+
+    const taldeak = ["LH3", "LH4", "LH5", "DBH"];
 
     let html = `
       <h2>🏠 Hasiera</h2>
 
       <div class="txartela">
         <h3>📅 Gaur</h3>
-        <p>${gaur}</p>
+        <p>${gaurIkusgai}</p>
       </div>
 
-      <h3>📢 Azken abisuak</h3>
+      <h3>📊 Gaurko asistentzia</h3>
     `;
+
+    taldeak.forEach(taldea => {
+      let guztira = 0;
+      let bertan = 0;
+
+      partaideak.table.rows.forEach(row => {
+        const taldeaSheet = gelaxka(row, 1);
+        const izena = gelaxka(row, 2);
+
+        if (taldeaSheet === taldea && izena) {
+          guztira++;
+        }
+      });
+
+      asistentzia.table.rows.forEach(row => {
+        const data = gelaxka(row, 0);
+        const taldeaSheet = gelaxka(row, 1);
+        const asistentziaBalioa = gelaxka(row, 4);
+
+        if (
+          data === gaurISO &&
+          taldeaSheet === taldea &&
+          asistentziaBalioa === "Bai"
+        ) {
+          bertan++;
+        }
+      });
+
+      html += `
+        <div class="txartela">
+          <h3>${taldea}</h3>
+          <p><strong>${bertan}/${guztira}</strong> bertan gaur</p>
+        </div>
+      `;
+    });
+
+    html += `<h3>📢 Azken abisuak</h3>`;
 
     abisuak.table.rows.slice(-3).reverse().forEach(row => {
       const izenburua = gelaxka(row, 1);
@@ -88,7 +130,10 @@ async function hasieraIkusi() {
     edukia.innerHTML = html;
 
   } catch (error) {
-    edukia.innerHTML = `<p>Ezin izan da hasiera kargatu.</p><small>${error}</small>`;
+    edukia.innerHTML = `
+      <p>Ezin izan da hasiera kargatu.</p>
+      <small>${error}</small>
+    `;
   }
 }
 
