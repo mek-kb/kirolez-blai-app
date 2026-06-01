@@ -2,10 +2,10 @@ const SHEET_ID = "14HT9OC7slKCsJrVNCLMcTaJPPYDfcgw3VKhLMO-6Xfo";
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwV1hubdsBkgs4ZjLBqS6K8Ut-8_Dgw7CxO_kJkUAjEkBuQUwPIFOd6XaIxirVVDnd_qg/exec";
 
 function erakutsiAtala(atala) {
+  const edukia = document.getElementById("edukia");
+
   if (atala === "hasiera") hasieraIkusi();
   if (atala === "abisuak") kargatuAbisuak();
-
-  const edukia = document.getElementById("edukia");
 
   if (["LH3", "LH4", "LH5", "DBH"].includes(atala)) {
     edukia.innerHTML = `
@@ -30,7 +30,32 @@ async function sheetKargatu(sheetIzena) {
 }
 
 function gelaxka(row, index) {
-  return row.c[index]?.v || "";
+  if (!row.c[index]) return "";
+  return row.c[index].f || row.c[index].v || "";
+}
+
+function gaurISO() {
+  return new Date().toISOString().split("T")[0];
+}
+
+function dataNormalizatu(data) {
+  if (!data) return "";
+
+  const testua = String(data);
+
+  if (testua.includes("-")) {
+    return testua.substring(0, 10);
+  }
+
+  const match = testua.match(/Date\((\d+),(\d+),(\d+)\)/);
+  if (match) {
+    const urtea = match[1];
+    const hilabetea = String(Number(match[2]) + 1).padStart(2, "0");
+    const eguna = String(match[3]).padStart(2, "0");
+    return `${urtea}-${hilabetea}-${eguna}`;
+  }
+
+  return testua;
 }
 
 async function hasieraIkusi() {
@@ -42,9 +67,8 @@ async function hasieraIkusi() {
     const partaideak = await sheetKargatu("Partaideak");
     const asistentzia = await sheetKargatu("Asistentzia");
 
-    const gaurISO = new Date().toISOString().split("T")[0];
+    const gaur = gaurISO();
     const gaurIkusgai = new Date().toLocaleDateString("eu-ES");
-
     const taldeak = ["LH3", "LH4", "LH5", "DBH"];
 
     let html = `
@@ -60,35 +84,36 @@ async function hasieraIkusi() {
 
     taldeak.forEach(taldea => {
       let guztira = 0;
-      let bertan = 0;
+      const gaurBertan = new Set();
 
       partaideak.table.rows.forEach(row => {
         const taldeaSheet = gelaxka(row, 1);
         const izena = gelaxka(row, 2);
 
-        if (taldeaSheet === taldea && izena) {
+        if (taldeaSheet === taldea && izena && izena.toLowerCase() !== "izena") {
           guztira++;
         }
       });
 
       asistentzia.table.rows.forEach(row => {
-        const data = gelaxka(row, 0);
+        const data = dataNormalizatu(gelaxka(row, 0));
         const taldeaSheet = gelaxka(row, 1);
+        const id = gelaxka(row, 2);
         const asistentziaBalioa = gelaxka(row, 4);
 
         if (
-          data === gaurISO &&
+          data === gaur &&
           taldeaSheet === taldea &&
           asistentziaBalioa === "Bai"
         ) {
-          bertan++;
+          gaurBertan.add(id);
         }
       });
 
       html += `
         <div class="txartela">
           <h3>${taldea}</h3>
-          <p><strong>${bertan}/${guztira}</strong> bertan gaur</p>
+          <p><strong>${gaurBertan.size}/${guztira}</strong> bertan gaur</p>
         </div>
       `;
     });
@@ -298,7 +323,7 @@ async function asistentziaIkusi(taldea) {
 }
 
 async function gordeAsistentzia(taldea, id, izena, asistentzia) {
-  const gaur = new Date().toISOString().split("T")[0];
+  const gaur = gaurISO();
   const txartela = document.getElementById(`asistentzia-${id}`);
 
   txartela.innerHTML = `<h3>${izena}</h3><p><strong>Gordetzen...</strong></p>`;
