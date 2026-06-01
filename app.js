@@ -20,13 +20,9 @@ function erakutsiAtala(atala) {
     `;
   }
 
-  if (atala === "dokumentuak") {
-    edukia.innerHTML = `<h2>Dokumentuak</h2><p>Laster dokumentuak hemen agertuko dira.</p>`;
-  }
+  if (atala === "dokumentuak") dokumentuakIkusi();
 
-  if (atala === "protokoloak") {
-    edukia.innerHTML = `<h2>Protokoloak</h2><p>Laster protokoloak hemen agertuko dira.</p>`;
-  }
+  if (atala === "protokoloak") protokoloakIkusi();
 }
 
 async function sheetKargatu(sheetIzena) {
@@ -238,5 +234,59 @@ async function gordeAsistentzia(taldea, id, izena, asistentzia) {
       <p><strong>Errorea gordetzean</strong></p>
       <button onclick="gordeAsistentzia('${taldea}', '${id}', '${izena}', '${asistentzia}')">Saiatu berriro</button>
     `;
+  }
+}
+
+async function dokumentuakIkusi() {
+  const edukia = document.getElementById("edukia");
+  edukia.innerHTML = "<p>Dokumentuak kargatzen...</p>";
+
+  try {
+    const json = await sheetKargatu("Dokumentuak");
+    let html = `<h2>📄 Dokumentuak</h2>`;
+
+    json.table.rows.forEach(row => {
+      const izenburua = gelaxka(row, 0);
+      const esteka = gelaxka(row, 1);
+
+      if (izenburua && esteka) {
+        html += `
+          <div class="txartela">
+            <a href="${esteka}" target="_blank">📄 ${izenburua}</a>
+          </div>
+        `;
+      }
+    });
+
+    edukia.innerHTML = html;
+  } catch (error) {
+    edukia.innerHTML = `<p>Ezin izan dira dokumentuak kargatu.</p><small>${error}</small>`;
+  }
+}
+
+async function protokoloakIkusi() {
+  const edukia = document.getElementById("edukia");
+  edukia.innerHTML = "<p>Protokoloak kargatzen...</p>";
+
+  try {
+    const json = await sheetKargatu("Protokoloak");
+    let html = `<h2>📋 Protokoloak</h2>`;
+
+    json.table.rows.forEach(row => {
+      const izenburua = gelaxka(row, 0);
+      const esteka = gelaxka(row, 1);
+
+      if (izenburua && esteka) {
+        html += `
+          <div class="txartela">
+            <a href="${esteka}" target="_blank">📋 ${izenburua}</a>
+          </div>
+        `;
+      }
+    });
+
+    edukia.innerHTML = html;
+  } catch (error) {
+    edukia.innerHTML = `<p>Ezin izan dira protokoloak kargatu.</p><small>${error}</small>`;
   }
 }
