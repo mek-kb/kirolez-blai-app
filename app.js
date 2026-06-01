@@ -4,15 +4,10 @@ function erakutsiAtala(atala) {
   const edukia = document.getElementById("edukia");
 
   if (atala === "hasiera") {
-    edukia.innerHTML = `
-      <h2>Ongi etorri!</h2>
-      <p>Kirolez Blai 2026 langileentzako aplikazioa.</p>
-    `;
+    edukia.innerHTML = `<h2>Ongi etorri!</h2><p>Kirolez Blai 2026 langileentzako aplikazioa.</p>`;
   }
 
-  if (atala === "abisuak") {
-    kargatuAbisuak();
-  }
+  if (atala === "abisuak") kargatuAbisuak();
 
   if (["LH3", "LH4", "LH5", "DBH"].includes(atala)) {
     edukia.innerHTML = `
@@ -25,56 +20,54 @@ function erakutsiAtala(atala) {
   }
 
   if (atala === "dokumentuak") {
-    edukia.innerHTML = `
-      <h2>Dokumentuak</h2>
-      <p>Laster dokumentuak hemen agertuko dira.</p>
-    `;
+    edukia.innerHTML = `<h2>Dokumentuak</h2><p>Laster dokumentuak hemen agertuko dira.</p>`;
   }
 
   if (atala === "protokoloak") {
-    edukia.innerHTML = `
-      <h2>Protokoloak</h2>
-      <p>Laster protokoloak hemen agertuko dira.</p>
-    `;
+    edukia.innerHTML = `<h2>Protokoloak</h2><p>Laster protokoloak hemen agertuko dira.</p>`;
   }
+}
+
+async function sheetKargatu(sheetIzena) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${sheetIzena}`;
+  const erantzuna = await fetch(url);
+  const testua = await erantzuna.text();
+  const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
+  return JSON.parse(jsonText);
+}
+
+function gelaxka(row, index) {
+  return row.c[index]?.v || "";
 }
 
 async function kargatuAbisuak() {
   const edukia = document.getElementById("edukia");
   edukia.innerHTML = "<p>Abisuak kargatzen...</p>";
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Abisuak`;
-
   try {
-    const erantzuna = await fetch(url);
-    const testua = await erantzuna.text();
-    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
-    const json = JSON.parse(jsonText);
-
+    const json = await sheetKargatu("Abisuak");
     let html = "<h2>📢 Abisuak</h2>";
 
     json.table.rows.forEach(row => {
-      const data = row.c[0]?.v || "";
-      const izenburua = row.c[1]?.v || "";
-      const mezua = row.c[2]?.v || "";
-      const taldea = row.c[3]?.v || "";
+      const data = gelaxka(row, 0);
+      const izenburua = gelaxka(row, 1);
+      const mezua = gelaxka(row, 2);
+      const taldea = gelaxka(row, 3);
 
-      html += `
-        <div class="txartela">
-          <h3>${izenburua}</h3>
-          <p>${mezua}</p>
-          <small>${data} · ${taldea}</small>
-        </div>
-      `;
+      if (izenburua || mezua) {
+        html += `
+          <div class="txartela">
+            <h3>${izenburua}</h3>
+            <p>${mezua}</p>
+            <small>${data} · ${taldea}</small>
+          </div>
+        `;
+      }
     });
 
     edukia.innerHTML = html;
-
   } catch (error) {
-    edukia.innerHTML = `
-      <p>Ezin izan dira abisuak kargatu.</p>
-      <small>${error}</small>
-    `;
+    edukia.innerHTML = `<p>Ezin izan dira abisuak kargatu.</p><small>${error}</small>`;
   }
 }
 
@@ -82,29 +75,17 @@ async function ordutegiaIkusi(taldea) {
   const edukia = document.getElementById("edukia");
   edukia.innerHTML = `<p>${taldea} taldeko ordutegia kargatzen...</p>`;
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Ordutegiak`;
-
   try {
-    const erantzuna = await fetch(url);
-    const testua = await erantzuna.text();
-    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
-    const json = JSON.parse(jsonText);
-
+    const json = await sheetKargatu("Ordutegiak");
     let irudia = "";
 
     json.table.rows.forEach(row => {
-      const taldeaSheet = row.c[0]?.v || "";
-      const irudiaUrl = row.c[1]?.v || "";
-
-      if (taldeaSheet === taldea) {
-        irudia = irudiaUrl;
-      }
+      if (gelaxka(row, 0) === taldea) irudia = gelaxka(row, 1);
     });
 
     edukia.innerHTML = irudia
       ? `<h2>${taldea} - Ordutegia</h2><img src="${irudia}" class="irudiHandia">`
       : `<h2>${taldea} - Ordutegia</h2><p>Ez da ordutegirik aurkitu.</p>`;
-
   } catch (error) {
     edukia.innerHTML = `<p>Ezin izan da ordutegia kargatu.</p><small>${error}</small>`;
   }
@@ -114,29 +95,17 @@ async function kokalekuakIkusi(taldea) {
   const edukia = document.getElementById("edukia");
   edukia.innerHTML = `<p>${taldea} taldeko kokalekuak kargatzen...</p>`;
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Kokalekuak`;
-
   try {
-    const erantzuna = await fetch(url);
-    const testua = await erantzuna.text();
-    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
-    const json = JSON.parse(jsonText);
-
+    const json = await sheetKargatu("Kokalekuak");
     let irudia = "";
 
     json.table.rows.forEach(row => {
-      const taldeaSheet = row.c[0]?.v || "";
-      const irudiaUrl = row.c[1]?.v || "";
-
-      if (taldeaSheet === taldea) {
-        irudia = irudiaUrl;
-      }
+      if (gelaxka(row, 0) === taldea) irudia = gelaxka(row, 1);
     });
 
     edukia.innerHTML = irudia
       ? `<h2>${taldea} - Kokalekuak</h2><img src="${irudia}" class="irudiHandia">`
       : `<h2>${taldea} - Kokalekuak</h2><p>Ez da kokalekurik aurkitu.</p>`;
-
   } catch (error) {
     edukia.innerHTML = `<p>Ezin izan dira kokalekuak kargatu.</p><small>${error}</small>`;
   }
@@ -146,13 +115,8 @@ async function partaideakIkusi(taldea) {
   const edukia = document.getElementById("edukia");
   edukia.innerHTML = `<p>${taldea} taldeko partaideak kargatzen...</p>`;
 
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Partaideak`;
-
   try {
-    const erantzuna = await fetch(url);
-    const testua = await erantzuna.text();
-    const jsonText = testua.substring(testua.indexOf("{"), testua.lastIndexOf("}") + 1);
-    const json = JSON.parse(jsonText);
+    const json = await sheetKargatu("Partaideak");
 
     let html = `
       <h2>${taldea} - Partaideak</h2>
@@ -161,16 +125,16 @@ async function partaideakIkusi(taldea) {
     `;
 
     json.table.rows.forEach(row => {
-      const id = row.c[0]?.v || "";
-      const taldeaSheet = row.c[1]?.v || "";
-      const izena = row.c[2]?.v || "";
-      const tutorea = row.c[3]?.v || "";
-      const telefonoa = row.c[4]?.v || "";
-      const alergiak = row.c[5]?.v || "";
-      const beldurrak = row.c[6]?.v || "";
-      const baimenak = row.c[7]?.v || "";
+      const id = gelaxka(row, 0);
+      const taldeaSheet = gelaxka(row, 1);
+      const izena = gelaxka(row, 2);
+      const tutorea = gelaxka(row, 3);
+      const telefonoa = gelaxka(row, 4);
+      const alergiak = gelaxka(row, 5);
+      const beldurrak = gelaxka(row, 6);
+      const baimenak = gelaxka(row, 7);
 
-      if (taldeaSheet === taldea) {
+      if (taldeaSheet === taldea && izena) {
         html += `
           <div class="txartela partaide-txartela">
             <h3>${izena}</h3>
@@ -187,12 +151,8 @@ async function partaideakIkusi(taldea) {
 
     html += `</div>`;
     edukia.innerHTML = html;
-
   } catch (error) {
-    edukia.innerHTML = `
-      <p>Ezin izan dira partaideak kargatu.</p>
-      <small>${error}</small>
-    `;
+    edukia.innerHTML = `<p>Ezin izan dira partaideak kargatu.</p><small>${error}</small>`;
   }
 }
 
