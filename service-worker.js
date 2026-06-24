@@ -1,4 +1,4 @@
-const CACHE_NAME = "kirolez-blai-v1";
+const CACHE_NAME = "kirolez-blai-v2";
 
 const FILES_TO_CACHE = [
   "./",
