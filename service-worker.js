@@ -6,6 +6,10 @@ const FILES_TO_CACHE = [
   "./style.css",
   "./app.js",
   "./manifest.json"
+  "./images/lh3-ordutegia.jpg",
+  "./images/lh4-ordutegia.jpg",
+  "./images/lh5-ordutegia.jpg",
+  "./images/dbh-ordutegia.jpg"
 ];
 
 self.addEventListener("install", event => {
