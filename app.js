@@ -195,24 +195,20 @@ async function kargatuAbisuak() {
 
 async function ordutegiaIkusi(taldea) {
   const edukia = document.getElementById("edukia");
-  edukia.innerHTML = `<p>${taldea} taldeko ordutegia kargatzen...</p>`;
 
-  try {
-    const json = await sheetKargatu("Ordutegiak");
-    let irudia = "";
+  const ordutegiak = {
+    LH3: "images/lh3-ordutegia.jpg",
+    LH4: "images/lh4-ordutegia.jpg",
+    LH5: "images/lh5-ordutegia.jpg",
+    DBH: "images/dbh-ordutegia.jpg"
+  };
 
-    json.table.rows.forEach(row => {
-      if (gelaxka(row, 0) === taldea) irudia = gelaxka(row, 1);
-    });
+  const irudia = ordutegiak[taldea];
 
-    edukia.innerHTML = irudia
-      ? `<h2>${taldea} - Ordutegia</h2><img src="${irudia}" class="irudiHandia">`
-      : `<h2>${taldea} - Ordutegia</h2><p>Ez da ordutegirik aurkitu.</p>`;
-  } catch (error) {
-    edukia.innerHTML = `<p>Ezin izan da ordutegia kargatu.</p><small>${error}</small>`;
-  }
+  edukia.innerHTML = irudia
+    ? `<h2>${taldea} - Ordutegia</h2><img src="${irudia}" class="irudiHandia">`
+    : `<h2>${taldea} - Ordutegia</h2><p>Ez da ordutegirik aurkitu.</p>`;
 }
-
 async function kokalekuakIkusi(taldea) {
   const edukia = document.getElementById("edukia");
   edukia.innerHTML = `<p>${taldea} taldeko kokalekuak kargatzen...</p>`;
